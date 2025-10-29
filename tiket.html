@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html class="dark" lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TiketGo — Tiket Saya</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f10;--muted:#9ca3af;--accent:#ea2a33}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+    body{font-family:"Plus Jakarta Sans",sans-serif;background:var(--bg);color:#fff;min-height:100dvh}
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+  <header class="sticky top-0 z-30 bg-[rgba(10,10,10,0.9)] px-4 py-3 border-b border-white/6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="p-2"><span class="material-symbols-outlined">arrow_back</span></a>
+      <h1 class="text-lg font-semibold">Tiket Saya</h1>
+    </div>
+    <a href="keranjang.html" class="p-2"><span class="material-symbols-outlined">shopping_cart</span></a>
+  </header>
+
+  <main class="flex-1 overflow-y-auto px-4 py-4 pb-36">
+    <div id="ticketsList" class="space-y-4"></div>
+    <div id="noTicket" class="hidden text-center text-[--muted] mt-12">
+      <p class="mb-3">Belum ada tiket</p>
+      <a href="index.html" class="inline-block bg-[--accent] px-4 py-2 rounded-lg">Cari Acara</a>
+    </div>
+  </main>
+
+  <!-- Bottom Navbar -->
+  <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(98%,1200px)] bg-[rgba(10,10,10,0.95)] border border-white/6 rounded-2xl flex justify-between px-4 py-2 items-center">
+    <a href="index.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">home</span><span class="text-xs">Beranda</span></a>
+    <a href="Pencarian.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">search</span><span class="text-xs">Cari</span></a>
+    <a href="tiket.html" class="flex flex-col items-center text-[--accent]"><span class="material-symbols-outlined">confirmation_number</span><span class="text-xs">Tiket</span></a>
+    <a href="keranjang.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">shopping_cart</span><span class="text-xs">Keranjang</span></a>
+    <a href="#" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">person</span><span class="text-xs">Akun</span></a>
+  </nav>
+
+  <script>
+    const PURCHASE_KEY = 'tiketgo_purchased';
+    function getPurchased(){ try{return JSON.parse(localStorage.getItem(PURCHASE_KEY)||'[]')}catch(e){return []} }
+    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+    const ticketsList = document.getElementById('ticketsList');
+    const noTicket = document.getElementById('noTicket');
+
+    function render(){
+      const list = getPurchased();
+      ticketsList.innerHTML = '';
+      if(!list.length){ noTicket.classList.remove('hidden'); return; }
+      noTicket.classList.add('hidden');
+      list.forEach(t=>{
+        const el = document.createElement('div');
+        el.className = 'bg-[rgba(255,255,255,0.02)] rounded-lg p-3 flex gap-3 items-start';
+        el.innerHTML = `
+          <img src="${t.img}" class="h-20 w-28 rounded object-cover"/>
+          <div class="flex-1">
+            <div class="font-semibold">${escapeHtml(t.title)}</div>
+            <div class="text-xs text-[--muted]">${t.date} • ${escapeHtml(t.location)}</div>
+            <div class="mt-2 text-sm">Kode: <span class="font-mono bg-white/5 px-2 py-1 rounded">${t.ticketCode||('TKT-'+(t.id||'000'))}</span></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="viewBtn px-3 py-2 rounded bg-white/6">Lihat</button>
+            <button class="shareBtn px-3 py-2 rounded bg-white/6">Bagikan</button>
+          </div>
+        `;
+        ticketsList.appendChild(el);
+      });
+    }
+
+    // simulate purchase if ?addPurchased=ID passed (used after checkout simulation)
+    (function handleQueryAdd(){
+      const params = new URLSearchParams(location.search);
+      const addId = params.get('addPurchased');
+      if(addId){
+        const sampleMap = {
+          1:{id:1,title:"International Music Fest",date:"31 Des 2024",location:"GBK Stadium",img:"https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1200&auto=format&fit=crop"},
+          2:{id:2,title:"Rock Legends Live",date:"15 Des 2024",location:"Istora",img:"https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=1200&auto=format&fit=crop"}
+        };
+        const ev = sampleMap[Number(addId)];
+        if(ev){
+          const list = getPurchased();
+          list.unshift({...ev, ticketCode: 'TKT' + Date.now()});
+          localStorage.setItem(PURCHASE_KEY, JSON.stringify(list));
+          history.replaceState({},'', location.pathname);
+        }
+      }
+    })();
+
+    render();
+    window.addEventListener('storage', (e)=>{ if(e.key === PURCHASE_KEY) render(); });
+  </script>
+</body>
+</html>
