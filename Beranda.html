@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="dark" lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TiketGo — Beranda</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f10;--card:#171717;--muted:#9ca3af;--accent:#ea2a33}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+    body{font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:var(--bg); color:#fff; min-height:100dvh}
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-30 bg-[rgba(10,10,10,0.85)] backdrop-blur px-4 py-3 flex items-center gap-3 border-b border-white/6">
+    <div class="flex items-center gap-3">
+      <img src="https://i.imgur.com/4V6Qm7k.png" alt="logo" class="h-8 w-8 rounded-full object-cover"/>
+      <h1 class="text-xl font-extrabold text-[--accent]">TiketGo</h1>
+    </div>
+
+    <form id="globalSearchForm" class="flex ml-4 flex-1" onsubmit="goToSearch(event)">
+      <input id="globalSearch" aria-label="Cari acara" placeholder="Cari acara, artis atau lokasi..." class="w-full rounded-xl bg-[rgba(255,255,255,0.03)] placeholder:text-[--muted] px-4 py-2 focus:outline-none"/>
+      <button type="submit" class="ml-2 p-2 rounded-xl bg-[rgba(255,255,255,0.03)]" aria-label="Search">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+    </form>
+
+    <a href="Pencarian.html" class="ml-3 p-2 rounded-md bg-[rgba(255,255,255,0.02)]"><span class="material-symbols-outlined">filter_list</span></a>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-1 overflow-y-auto px-4 py-4 pb-36">
+    <!-- Hero -->
+    <section class="mb-6">
+      <div class="rounded-xl overflow-hidden relative">
+        <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2000&auto=format&fit=crop" alt="hero" class="w-full h-64 sm:h-72 md:h-96 object-cover"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent p-5 flex flex-col justify-end">
+          <h2 class="text-2xl sm:text-3xl font-bold">International Music Fest</h2>
+          <p class="text-sm text-[--muted] mt-1">Top artists • GBK Stadium</p>
+          <div class="mt-3 flex gap-2">
+            <a href="Detail.html?id=1" class="inline-block bg-[--accent] px-4 py-2 rounded-lg font-semibold shadow">Lihat Detail</a>
+            <button onclick="addToCart(1)" class="inline-block bg-white/6 hover:bg-white/8 px-4 py-2 rounded-lg font-semibold text-white">Tambah ke Keranjang</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="mb-6">
+      <div class="flex gap-3 overflow-auto pb-2">
+        <button onclick="filterCategory('')" class="flex-shrink-0 px-4 py-2 rounded-full bg-white/6 text-sm">Semua</button>
+        <button onclick="filterCategory('Musik')" class="flex-shrink-0 px-4 py-2 rounded-full bg-white/6 text-sm">Musik</button>
+        <button onclick="filterCategory('Olahraga')" class="flex-shrink-0 px-4 py-2 rounded-full bg-white/6 text-sm">Olahraga</button>
+        <button onclick="filterCategory('Festival')" class="flex-shrink-0 px-4 py-2 rounded-full bg-white/6 text-sm">Festival</button>
+        <button onclick="filterCategory('Seni')" class="flex-shrink-0 px-4 py-2 rounded-full bg-white/6 text-sm">Seni</button>
+      </div>
+    </section>
+
+    <!-- Grid: banyak foto, responsif -->
+    <section>
+      <h3 class="text-lg font-semibold mb-3">Rekomendasi untuk Anda</h3>
+      <div id="cardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+    </section>
+  </main>
+
+  <!-- Bottom Navbar (with ticket & cart icons + badge) -->
+  <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(98%,1200px)] bg-[rgba(10,10,10,0.95)] border border-white/6 rounded-2xl flex justify-between px-4 py-2 items-center shadow-lg">
+    <a href="Beranda.html" class="flex flex-col items-center text-[--accent]">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-xs">Beranda</span>
+    </a>
+    <a href="Pencarian.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]">
+      <span class="material-symbols-outlined">search</span>
+      <span class="text-xs">Cari</span>
+    </a>
+    <a href="tiket.html" class="flex flex-col items-center text-white/80 hover:text-[--accent] relative">
+      <span class="material-symbols-outlined">confirmation_number</span>
+      <span class="text-xs">Tiket</span>
+    </a>
+    <a href="keranjang.html" class="flex flex-col items-center text-white/80 hover:text-[--accent] relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span class="text-xs">Keranjang</span>
+      <span id="cartBadge" class="absolute -top-2 -right-2 min-w-[18px] h-4 px-1 rounded-full text-xs text-black bg-[--accent] flex items-center justify-center hidden">0</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-white/80 hover:text-[--accent]">
+      <span class="material-symbols-outlined">person</span>
+      <span class="text-xs">Akun</span>
+    </a>
+  </nav>
+
+  <!-- Data + logic -->
+  <script>
+    // EVENTS (same across pages; keep in sync if editing)
+    const EVENTS = [
+      {id:1, title:"International Music Fest", date:"31 Des 2024", location:"GBK Stadium", price:350000, img:"https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Festival musik internasional."},
+      {id:2, title:"Rock Legends Live", date:"15 Des 2024", location:"Istora", price:250000, img:"https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Konser rock."},
+      {id:3, title:"City Marathon", date:"18 Des 2024", location:"Jakarta", price:150000, img:"https://images.unsplash.com/photo-1551974740-3657c859cee3?q=80&w=1200&auto=format&fit=crop", category:"Olahraga", desc:"Lomba lari kota."},
+      {id:4, title:"Jazz Night Special", date:"1 Jan 2025", location:"Candra", price:120000, img:"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Malam jazz."},
+      {id:5, title:"Culinary Festival", date:"28 Des 2024", location:"Car Free Day", price:80000, img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop", category:"Festival", desc:"Festival kuliner."},
+      {id:6, title:"Art & Soul Exhibition", date:"22 Des 2024", location:"Galeri Nasional", price:60000, img:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1200&auto=format&fit=crop", category:"Seni", desc:"Pameran seni."},
+      {id:7, title:"EDM Night Out", date:"29 Des 2024", location:"Club X", price:200000, img:"https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Pesta EDM."},
+      {id:8, title:"Theatre Classics", date:"30 Des 2024", location:"Teater Kota", price:90000, img:"https://images.unsplash.com/photo-1504036190944-95e9a4f5a35c?q=80&w=1200&auto=format&fit=crop", category:"Teater", desc:"Drama klasik."},
+      {id:9, title:"Indie Vibes", date:"12 Jan 2025", location:"Cafe Hall", price:70000, img:"https://images.unsplash.com/photo-1520975912609-0f1b3738f7a8?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Indie showcase."},
+      {id:10, title:"Food Truck Fiesta", date:"5 Jan 2025", location:"Park", price:50000, img:"https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop", category:"Festival", desc:"Kumpulan food truck."}
+    ];
+
+    // Cart helpers (localStorage)
+    const CART_KEY = 'tiketgo_cart';
+    function getCart(){ try{return JSON.parse(localStorage.getItem(CART_KEY)||'[]')}catch(e){return []} }
+    function saveCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartBadge(); }
+    function addToCart(id, qty=1){
+      const ev = EVENTS.find(e=>e.id===Number(id));
+      if(!ev) return alert('Event tidak ditemukan');
+      const c = getCart();
+      const item = c.find(i=>i.id===ev.id);
+      if(item) item.qty += qty;
+      else c.push({id:ev.id, title:ev.title, price:ev.price, qty, img:ev.img});
+      saveCart(c);
+      // small visual feedback
+      const badge = document.getElementById('cartBadge');
+      if(badge) { badge.classList.remove('hidden'); badge.classList.add('animate-[pulse_0.6s]'); setTimeout(()=>badge.classList.remove('animate-[pulse_0.6s]'),600); }
+      // if on keranjang page, we could re-render (pages read from storage on load)
+    }
+
+    // update badge UI
+    function updateCartBadge(){
+      const badge = document.getElementById('cartBadge');
+      if(!badge) return;
+      const c = getCart();
+      const totalQty = c.reduce((s,i)=>s + (i.qty||0), 0);
+      if(totalQty>0){ badge.textContent = totalQty; badge.classList.remove('hidden'); }
+      else badge.classList.add('hidden');
+    }
+
+    // render grid
+    const grid = document.getElementById('cardsGrid');
+    function renderCards(list){
+      grid.innerHTML = '';
+      list.forEach(ev=>{
+        const a = document.createElement('div');
+        a.className = 'rounded-lg overflow-hidden bg-[rgba(255,255,255,0.02)] flex flex-col';
+        a.innerHTML = `
+          <a href="Detail.html?id=${ev.id}" class="block w-full aspect-[4/5] overflow-hidden">
+            <img src="${ev.img}" alt="${ev.title}" class="w-full h-full object-cover" />
+          </a>
+          <div class="p-2 flex-1 flex flex-col">
+            <div class="flex-1">
+              <p class="text-sm font-semibold leading-tight">${ev.title}</p>
+              <p class="text-xs text-[--muted]">${ev.date} • ${ev.location}</p>
+            </div>
+            <div class="mt-2 flex items-center justify-between gap-2">
+              <div class="text-sm font-bold text-[--accent]">Rp ${numberWithDots(ev.price)}</div>
+              <div class="flex gap-2">
+                <button onclick="addToCart(${ev.id})" class="px-3 py-1 rounded bg-white/6 text-sm">Tambah</button>
+                <a href="Detail.html?id=${ev.id}" class="px-3 py-1 rounded bg-[--accent] text-sm">Detail</a>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(a);
+      });
+    }
+    function numberWithDots(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+
+    // category filter
+    function filterCategory(cat){
+      if(!cat) renderCards(EVENTS);
+      else renderCards(EVENTS.filter(e=>e.category===cat));
+    }
+
+    // search redirect
+    function goToSearch(e){
+      e?.preventDefault();
+      const q = document.getElementById('globalSearch').value.trim();
+      const base = location.pathname.replace(/[^/]*$/, '') + 'Pencarian.html';
+      location.href = q ? `${base}?q=${encodeURIComponent(q)}` : base;
+    }
+
+    // on load
+    (function init(){
+      renderCards(EVENTS);
+      updateCartBadge();
+    })();
+
+    // keep badge in sync across tabs/pages
+    window.addEventListener('storage', (e)=>{
+      if(e.key === CART_KEY) updateCartBadge();
+    });
+  </script>
+</body>
+</html>

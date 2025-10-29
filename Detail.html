@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="dark" lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TiketGo — Detail</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f10;--muted:#9ca3af;--accent:#ea2a33}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+    body{font-family:"Plus Jakarta Sans",sans-serif;background:var(--bg);color:#fff;min-height:100dvh}
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+  <header class="sticky top-0 z-30 bg-[rgba(10,10,10,0.85)] backdrop-blur px-3 py-3 flex items-center justify-between border-b border-white/6">
+    <div class="flex items-center gap-3">
+      <a href="Beranda.html" class="p-2"><span class="material-symbols-outlined">arrow_back</span></a>
+      <h1 class="text-lg font-semibold">Detail Acara</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="Pencarian.html" class="p-2"><span class="material-symbols-outlined">search</span></a>
+      <a href="keranjang.html" class="relative p-2">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span id="cartBadge" class="absolute -top-1 -right-1 min-w-[18px] h-4 px-1 rounded-full text-xs text-black bg-[--accent] flex items-center justify-center hidden">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="content" class="flex-1 overflow-y-auto px-4 py-4 pb-36">
+    <!-- JS will render content -->
+  </main>
+
+  <!-- Bottom Navbar -->
+  <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(98%,1200px)] bg-[rgba(10,10,10,0.95)] border border-white/6 rounded-2xl flex justify-between px-4 py-2 items-center">
+    <a href="Beranda.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">home</span><span class="text-xs">Beranda</span></a>
+    <a href="Pencarian.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">search</span><span class="text-xs">Cari</span></a>
+    <a href="tiket.html" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">confirmation_number</span><span class="text-xs">Tiket</span></a>
+    <a href="keranjang.html" class="flex flex-col items-center text-white/80 hover:text-[--accent] relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="cartBadgeNav" class="absolute -top-2 -right-2 min-w-[18px] h-4 px-1 rounded-full text-xs text-black bg-[--accent] flex items-center justify-center hidden">0</span>
+      <span class="text-xs">Keranjang</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-white/80 hover:text-[--accent]"><span class="material-symbols-outlined">person</span><span class="text-xs">Akun</span></a>
+  </nav>
+
+  <script>
+    const EVENTS = [
+      {id:1, title:"International Music Fest", date:"31 Des 2024", location:"GBK Stadium", price:350000, img:"https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Festival musik internasional dengan artis top."},
+      {id:2, title:"Rock Legends Live", date:"15 Des 2024", location:"Istora", price:250000, img:"https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Konser rock."},
+      {id:3, title:"City Marathon", date:"18 Des 2024", location:"Jakarta", price:150000, img:"https://images.unsplash.com/photo-1551974740-3657c859cee3?q=80&w=1200&auto=format&fit=crop", category:"Olahraga", desc:"Marathon tahunan."},
+      {id:4, title:"Jazz Night Special", date:"1 Jan 2025", location:"Candra", price:120000, img:"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop", category:"Musik", desc:"Malam jazz istimewa."},
+      {id:5, title:"Culinary Festival", date:"28 Des 2024", location:"Car Free Day", price:80000, img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop", category:"Festival", desc:"Festival kuliner."}
+    ];
+
+    // Cart helpers (same logic)
+    const CART_KEY = 'tiketgo_cart';
+    function getCart(){ try{return JSON.parse(localStorage.getItem(CART_KEY)||'[]')}catch(e){return []} }
+    function saveCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartBadge(); }
+    function addToCart(id, qty=1){
+      const ev = EVENTS.find(e=>e.id===Number(id));
+      if(!ev) return alert('Event tidak ditemukan');
+      const c = getCart();
+      const item = c.find(i=>i.id===ev.id);
+      if(item) item.qty += qty;
+      else c.push({id:ev.id, title:ev.title, price:ev.price, qty, img:ev.img});
+      saveCart(c);
+      // feedback
+      alert(ev.title + ' ditambahkan ke keranjang');
+    }
+
+    function updateCartBadge(){
+      const badge = document.getElementById('cartBadge');
+      const badgeNav = document.getElementById('cartBadgeNav');
+      if(!badgeNav || !badge) return;
+      const c = getCart();
+      const totalQty = c.reduce((s,i)=>s + (i.qty||0), 0);
+      if(totalQty>0){ badge.textContent = totalQty; badge.classList.remove('hidden'); badgeNav.textContent = totalQty; badgeNav.classList.remove('hidden'); }
+      else { badge.classList.add('hidden'); badgeNav.classList.add('hidden'); }
+    }
+
+    function numberWithDots(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    function getParam(name){ return new URLSearchParams(location.search).get(name); }
+    const id = Number(getParam('id')) || 1;
+    const event = EVENTS.find(e=>e.id===id) || EVENTS[0];
+
+    function renderDetail(){
+      const main = document.getElementById('content');
+      main.innerHTML = `
+        <div class="rounded-xl overflow-hidden">
+          <img src="${event.img}" alt="${escapeHtml(event.title)}" class="w-full h-56 object-cover rounded-lg"/>
+        </div>
+
+        <div class="mt-4 space-y-3">
+          <h2 class="text-2xl font-bold">${escapeHtml(event.title)}</h2>
+          <div class="flex gap-4 text-sm text-[--muted]">
+            <div>${event.date}</div><div>•</div><div>${escapeHtml(event.location)}</div>
+          </div>
+          <p class="text-sm text-[--muted] mt-2">${escapeHtml(event.desc)}</p>
+
+          <div class="mt-4 flex gap-3 items-center">
+            <div class="px-4 py-2 bg-white/6 rounded-md font-semibold text-[--accent]">Rp ${numberWithDots(event.price)}</div>
+            <button id="addBtn" class="ml-auto inline-block bg-[--accent] px-4 py-2 rounded-lg font-semibold">Tambah ke Keranjang</button>
+          </div>
+        </div>
+
+        <section class="mt-6">
+          <h3 class="font-semibold mb-3">Acara lainnya</h3>
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            ${EVENTS.filter(e=>e.id!==event.id).slice(0,6).map(e=>`
+              <a href="Detail.html?id=${e.id}" class="block rounded-lg overflow-hidden bg-[rgba(255,255,255,0.02)]">
+                <div class="w-full aspect-[4/5]"><img src="${e.img}" alt="${escapeHtml(e.title)}" class="w-full h-full object-cover"/></div>
+                <div class="p-2 text-sm">
+                  <p class="font-semibold">${escapeHtml(e.title)}</p>
+                  <p class="text-xs text-[--muted]">${e.date}</p>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </section>
+      `;
+      document.getElementById('addBtn').addEventListener('click', ()=>{ addToCart(event.id); });
+    }
+
+    // init
+    renderDetail();
+    updateCartBadge();
+    window.addEventListener('storage', (e)=>{ if(e.key === CART_KEY) updateCartBadge(); });
+  </script>
+</body>
+</html>
